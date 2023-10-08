@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.22...3.25)
+
+add_subdirectory(linux-v4l2)
+add_subdirectory(linux-capture)
+add_subdirectory(linux-pulseaudio)
+#
+add_subdirectory(linux-jack)
+add_subdirectory(linux-alsa)
+add_subdirectory(linux-pipewire)
+add_subdirectory(vlc-video)
+#add_subdirectory(sndio)
+#add_subdirectory(obs-vst)
+#add_subdirectory(obs-qsv11)
+#
+#
+add_subdirectory(image-source)
+#add_subdirectory(obs-x264)
+add_subdirectory(obs-libfdk)
+add_subdirectory(obs-ffmpeg)
+#add_subdirectory(obs-outputs)
+#add_subdirectory(obs-filters)
+add_subdirectory(obs-transitions)
+add_subdirectory(rtmp-services)
+#add_subdirectory(text-freetype2)
+#add_subdirectory(aja)
+add_subdirectory(obs-webrtc)
