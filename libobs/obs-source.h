@@ -6,7 +6,6 @@
     the Free Software Foundation, either version 2 of the License, or
     (at your option) any later version.
 
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -28,55 +27,50 @@
  */
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-    enum obs_source_type
-    {
-        OBS_SOURCE_TYPE_INPUT,
-        OBS_SOURCE_TYPE_FILTER,
-        OBS_SOURCE_TYPE_TRANSITION,
-        OBS_SOURCE_TYPE_SCENE,
-    };
+enum obs_source_type {
+	OBS_SOURCE_TYPE_INPUT,
+	OBS_SOURCE_TYPE_FILTER,
+	OBS_SOURCE_TYPE_TRANSITION,
+	OBS_SOURCE_TYPE_SCENE,
+};
 
-    enum obs_balance_type
-    {
-        OBS_BALANCE_TYPE_SINE_LAW,
-        OBS_BALANCE_TYPE_SQUARE_LAW,
-        OBS_BALANCE_TYPE_LINEAR,
-    };
+enum obs_balance_type {
+	OBS_BALANCE_TYPE_SINE_LAW,
+	OBS_BALANCE_TYPE_SQUARE_LAW,
+	OBS_BALANCE_TYPE_LINEAR,
+};
 
-    enum obs_icon_type
-    {
-        OBS_ICON_TYPE_UNKNOWN,
-        OBS_ICON_TYPE_IMAGE,
-        OBS_ICON_TYPE_COLOR,
-        OBS_ICON_TYPE_SLIDESHOW,
-        OBS_ICON_TYPE_AUDIO_INPUT,
-        OBS_ICON_TYPE_AUDIO_OUTPUT,
-        OBS_ICON_TYPE_DESKTOP_CAPTURE,
-        OBS_ICON_TYPE_WINDOW_CAPTURE,
-        OBS_ICON_TYPE_GAME_CAPTURE,
-        OBS_ICON_TYPE_CAMERA,
-        OBS_ICON_TYPE_TEXT,
-        OBS_ICON_TYPE_MEDIA,
-        OBS_ICON_TYPE_BROWSER,
-        OBS_ICON_TYPE_CUSTOM,
-        OBS_ICON_TYPE_PROCESS_AUDIO_OUTPUT,
-    };
+enum obs_icon_type {
+	OBS_ICON_TYPE_UNKNOWN,
+	OBS_ICON_TYPE_IMAGE,
+	OBS_ICON_TYPE_COLOR,
+	OBS_ICON_TYPE_SLIDESHOW,
+	OBS_ICON_TYPE_AUDIO_INPUT,
+	OBS_ICON_TYPE_AUDIO_OUTPUT,
+	OBS_ICON_TYPE_DESKTOP_CAPTURE,
+	OBS_ICON_TYPE_WINDOW_CAPTURE,
+	OBS_ICON_TYPE_GAME_CAPTURE,
+	OBS_ICON_TYPE_CAMERA,
+	OBS_ICON_TYPE_TEXT,
+	OBS_ICON_TYPE_MEDIA,
+	OBS_ICON_TYPE_BROWSER,
+	OBS_ICON_TYPE_CUSTOM,
+	OBS_ICON_TYPE_PROCESS_AUDIO_OUTPUT,
+};
 
-    enum obs_media_state
-    {
-        OBS_MEDIA_STATE_NONE,
-        OBS_MEDIA_STATE_PLAYING,
-        OBS_MEDIA_STATE_OPENING,
-        OBS_MEDIA_STATE_BUFFERING,
-        OBS_MEDIA_STATE_PAUSED,
-        OBS_MEDIA_STATE_STOPPED,
-        OBS_MEDIA_STATE_ENDED,
-        OBS_MEDIA_STATE_ERROR,
-    };
+enum obs_media_state {
+	OBS_MEDIA_STATE_NONE,
+	OBS_MEDIA_STATE_PLAYING,
+	OBS_MEDIA_STATE_OPENING,
+	OBS_MEDIA_STATE_BUFFERING,
+	OBS_MEDIA_STATE_PAUSED,
+	OBS_MEDIA_STATE_STOPPED,
+	OBS_MEDIA_STATE_ENDED,
+	OBS_MEDIA_STATE_ERROR,
+};
 
 /**
  * @name Source output flags
@@ -209,122 +203,121 @@ extern "C"
  */
 #define OBS_SOURCE_CAP_DONT_SHOW_PROPERTIES (1 << 16)
 
-    /** @} */
+/** @} */
 
-    typedef void (*obs_source_enum_proc_t)(obs_source_t* parent, obs_source_t* child, void* param);
+typedef void (*obs_source_enum_proc_t)(obs_source_t *parent,
+				       obs_source_t *child, void *param);
 
-    struct obs_source_audio_mix
-    {
-        struct audio_output_data output[MAX_AUDIO_MIXES];
-    };
+struct obs_source_audio_mix {
+	struct audio_output_data output[MAX_AUDIO_MIXES];
+};
 
-    /**
+/**
  * Source definition structure
  */
-    struct obs_source_info
-    {
-        /* ----------------------------------------------------------------- */
-        /* Required implementation*/
+struct obs_source_info {
+	/* ----------------------------------------------------------------- */
+	/* Required implementation*/
 
-        /** Unique string identifier for the source */
-        const char* id;
+	/** Unique string identifier for the source */
+	const char *id;
 
-        /**
+	/**
 	 * Type of source.
 	 *
 	 * OBS_SOURCE_TYPE_INPUT for input sources,
 	 * OBS_SOURCE_TYPE_FILTER for filter sources, and
 	 * OBS_SOURCE_TYPE_TRANSITION for transition sources.
 	 */
-        enum obs_source_type type;
+	enum obs_source_type type;
 
-        /** Source output flags */
-        uint32_t output_flags;
+	/** Source output flags */
+	uint32_t output_flags;
 
-        /**
+	/**
 	 * Get the translated name of the source type
 	 *
 	 * @param  type_data  The type_data variable of this structure
 	 * @return               The translated name of the source type
 	 */
-        const char* (*get_name)(void* type_data);
+	const char *(*get_name)(void *type_data);
 
-        /**
+	/**
 	 * Creates the source data for the source
 	 *
 	 * @param  settings  Settings to initialize the source with
 	 * @param  source    Source that this data is associated with
 	 * @return           The data associated with this source
 	 */
-        void* (*create)(obs_data_t* settings, obs_source_t* source);
+	void *(*create)(obs_data_t *settings, obs_source_t *source);
 
-        /**
+	/**
 	 * Destroys the private data for the source
 	 *
 	 * Async sources must not call obs_source_output_video after returning
 	 * from destroy
 	 */
-        void (*destroy)(void* data);
+	void (*destroy)(void *data);
 
-        /** Returns the width of the source.  Required if this is an input
+	/** Returns the width of the source.  Required if this is an input
 	 * source and has non-async video */
-        uint32_t (*get_width)(void* data);
+	uint32_t (*get_width)(void *data);
 
-        /** Returns the height of the source.  Required if this is an input
+	/** Returns the height of the source.  Required if this is an input
 	 * source and has non-async video */
-        uint32_t (*get_height)(void* data);
+	uint32_t (*get_height)(void *data);
 
-        /* ----------------------------------------------------------------- */
-        /* Optional implementation */
+	/* ----------------------------------------------------------------- */
+	/* Optional implementation */
 
-        /**
+	/**
 	 * Gets the default settings for this source
 	 *
 	 * @param[out]  settings  Data to assign default settings to
 	 * @deprecated            Use get_defaults2 if type_data is needed
 	 */
-        void (*get_defaults)(obs_data_t* settings);
+	void (*get_defaults)(obs_data_t *settings);
 
-        /**
+	/**
 	 * Gets the property information of this source
 	 *
 	 * @return         The properties data
 	 * @deprecated     Use get_properties2 if type_data is needed
 	 */
-        obs_properties_t* (*get_properties)(void* data);
+	obs_properties_t *(*get_properties)(void *data);
 
-        /**
+	/**
 	 * Updates the settings for this source
 	 *
 	 * @param data      Source data
 	 * @param settings  New settings for this source
 	 */
-        void (*update)(void* data, obs_data_t* settings);
+	void (*update)(void *data, obs_data_t *settings);
 
-        /** Called when the source has been activated in the main view */
-        void (*activate)(void* data);
+	/** Called when the source has been activated in the main view */
+	void (*activate)(void *data);
 
-        /**
+	/**
 	 * Called when the source has been deactivated from the main view
 	 * (no longer being played/displayed)
 	 */
-        void (*deactivate)(void* data);
+	void (*deactivate)(void *data);
 
-        /** Called when the source is visible */
-        void (*show)(void* data);
+	/** Called when the source is visible */
+	void (*show)(void *data);
 
-        /** Called when the source is no longer visible */
-        void (*hide)(void* data);
+	/** Called when the source is no longer visible */
+	void (*hide)(void *data);
 
-        /**
+	/**
 	 * Called each video frame with the time elapsed
 	 *
 	 * @param  data     Source data
 	 * @param  seconds  Seconds elapsed since the last frame
 	 */
-        void (*video_tick)(void* data, float seconds);
+	void (*video_tick)(void *data, float seconds);
 
-        /**
+	/**
 	 * Called when rendering the source with the graphics subsystem.
 	 *
 	 * If this is an input/transition source, this is called to draw the
@@ -351,9 +344,9 @@ extern "C"
 	 *                be NULL, and the source is expected to process with
 	 *                an effect manually.
 	 */
-        void (*video_render)(void* data, gs_effect_t* effect);
+	void (*video_render)(void *data, gs_effect_t *effect);
 
-        /**
+	/**
 	 * Called to filter raw async video data.
 	 *
 	 * @note          This function is only used with filter sources.
@@ -363,9 +356,10 @@ extern "C"
 	 * @return        New video frame data.  This can defer video data to
 	 *                be drawn later if time is needed for processing
 	 */
-        struct obs_source_frame* (*filter_video)(void* data, struct obs_source_frame* frame);
+	struct obs_source_frame *(*filter_video)(
+		void *data, struct obs_source_frame *frame);
 
-        /**
+	/**
 	 * Called to filter raw audio data.
 	 *
 	 * @note          This function is only used with filter sources.
@@ -379,9 +373,10 @@ extern "C"
 	 *                until the next call to the filter_audio callback or
 	 *                until the filter is removed/destroyed.
 	 */
-        struct obs_audio_data* (*filter_audio)(void* data, struct obs_audio_data* audio);
+	struct obs_audio_data *(*filter_audio)(void *data,
+					       struct obs_audio_data *audio);
 
-        /**
+	/**
 	 * Called to enumerate all active sources being used within this
 	 * source.  If the source has children that render audio/video it must
 	 * implement this callback.
@@ -390,9 +385,11 @@ extern "C"
 	 * @param  enum_callback  Enumeration callback
 	 * @param  param          User data to pass to callback
 	 */
-        void (*enum_active_sources)(void* data, obs_source_enum_proc_t enum_callback, void* param);
+	void (*enum_active_sources)(void *data,
+				    obs_source_enum_proc_t enum_callback,
+				    void *param);
 
-        /**
+	/**
 	 * Called when saving a source.  This is a separate function because
 	 * sometimes a source needs to know when it is being saved so it
 	 * doesn't always have to update the current settings until a certain
@@ -401,9 +398,9 @@ extern "C"
 	 * @param  data      Source data
 	 * @param  settings  Settings
 	 */
-        void (*save)(void* data, obs_data_t* settings);
+	void (*save)(void *data, obs_data_t *settings);
 
-        /**
+	/**
 	 * Called when loading a source from saved data.  This should be called
 	 * after all the loading sources have actually been created because
 	 * sometimes there are sources that depend on each other.
@@ -411,9 +408,9 @@ extern "C"
 	 * @param  data      Source data
 	 * @param  settings  Settings
 	 */
-        void (*load)(void* data, obs_data_t* settings);
+	void (*load)(void *data, obs_data_t *settings);
 
-        /**
+	/**
 	 * Called when interacting with a source and a mouse-down or mouse-up
 	 * occurs.
 	 *
@@ -423,17 +420,19 @@ extern "C"
 	 * @param mouse_up     Mouse event type (true if mouse-up)
 	 * @param click_count  Mouse click count (1 for single click, etc.)
 	 */
-        void (*mouse_click)(void* data, const struct obs_mouse_event* event, int32_t type, bool mouse_up, uint32_t click_count);
-        /**
+	void (*mouse_click)(void *data, const struct obs_mouse_event *event,
+			    int32_t type, bool mouse_up, uint32_t click_count);
+	/**
 	 * Called when interacting with a source and a mouse-move occurs.
 	 *
 	 * @param data         Source data
 	 * @param event        Mouse event properties
 	 * @param mouse_leave  Mouse leave state (true if mouse left source)
 	 */
-        void (*mouse_move)(void* data, const struct obs_mouse_event* event, bool mouse_leave);
+	void (*mouse_move)(void *data, const struct obs_mouse_event *event,
+			   bool mouse_leave);
 
-        /**
+	/**
 	 * Called when interacting with a source and a mouse-wheel occurs.
 	 *
 	 * @param data         Source data
@@ -441,17 +440,18 @@ extern "C"
 	 * @param x_delta      Movement delta in the horizontal direction
 	 * @param y_delta      Movement delta in the vertical direction
 	 */
-        void (*mouse_wheel)(void* data, const struct obs_mouse_event* event, int x_delta, int y_delta);
-        /**
+	void (*mouse_wheel)(void *data, const struct obs_mouse_event *event,
+			    int x_delta, int y_delta);
+	/**
 	 * Called when interacting with a source and gain focus/lost focus event
 	 * occurs.
 	 *
 	 * @param data         Source data
 	 * @param focus        Focus state (true if focus gained)
 	 */
-        void (*focus)(void* data, bool focus);
+	void (*focus)(void *data, bool focus);
 
-        /**
+	/**
 	 * Called when interacting with a source and a key-up or key-down
 	 * occurs.
 	 *
@@ -459,30 +459,33 @@ extern "C"
 	 * @param event        Key event properties
 	 * @param focus        Key event type (true if mouse-up)
 	 */
-        void (*key_click)(void* data, const struct obs_key_event* event, bool key_up);
+	void (*key_click)(void *data, const struct obs_key_event *event,
+			  bool key_up);
 
-        /**
+	/**
 	 * Called when the filter is removed from a source
 	 *
 	 * @param  data    Filter data
 	 * @param  source  Source that the filter being removed from
 	 */
-        void (*filter_remove)(void* data, obs_source_t* source);
+	void (*filter_remove)(void *data, obs_source_t *source);
 
-        /**
+	/**
 	 * Private data associated with this entry
 	 */
-        void* type_data;
+	void *type_data;
 
-        /**
+	/**
 	 * If defined, called to free private data on shutdown
 	 */
-        void (*free_type_data)(void* type_data);
+	void (*free_type_data)(void *type_data);
 
-        bool (*audio_render)(void* data, uint64_t* ts_out, struct obs_source_audio_mix* audio_output, uint32_t mixers, size_t channels,
-                             size_t sample_rate);
+	bool (*audio_render)(void *data, uint64_t *ts_out,
+			     struct obs_source_audio_mix *audio_output,
+			     uint32_t mixers, size_t channels,
+			     size_t sample_rate);
 
-        /**
+	/**
 	 * Called to enumerate all active and inactive sources being used
 	 * within this source.  If this callback isn't implemented,
 	 * enum_active_sources will be called instead.
@@ -493,12 +496,14 @@ extern "C"
 	 * @param  enum_callback  Enumeration callback
 	 * @param  param          User data to pass to callback
 	 */
-        void (*enum_all_sources)(void* data, obs_source_enum_proc_t enum_callback, void* param);
+	void (*enum_all_sources)(void *data,
+				 obs_source_enum_proc_t enum_callback,
+				 void *param);
 
-        void (*transition_start)(void* data);
-        void (*transition_stop)(void* data);
+	void (*transition_start)(void *data);
+	void (*transition_stop)(void *data);
 
-        /**
+	/**
 	 * Gets the default settings for this source
 	 *
 	 * If get_defaults is also defined both will be called, and the first
@@ -507,53 +512,58 @@ extern "C"
 	 * @param       type_data The type_data variable of this structure
 	 * @param[out]  settings  Data to assign default settings to
 	 */
-        void (*get_defaults2)(void* type_data, obs_data_t* settings);
+	void (*get_defaults2)(void *type_data, obs_data_t *settings);
 
-        /**
+	/**
 	 * Gets the property information of this source
 	 *
 	 * @param data      Source data
 	 * @param type_data The type_data variable of this structure
 	 * @return          The properties data
 	 */
-        obs_properties_t* (*get_properties2)(void* data, void* type_data);
+	obs_properties_t *(*get_properties2)(void *data, void *type_data);
 
-        bool (*audio_mix)(void* data, uint64_t* ts_out, struct audio_output_data* audio_output, size_t channels, size_t sample_rate);
+	bool (*audio_mix)(void *data, uint64_t *ts_out,
+			  struct audio_output_data *audio_output,
+			  size_t channels, size_t sample_rate);
 
-        /** Icon type for the source */
-        enum obs_icon_type icon_type;
+	/** Icon type for the source */
+	enum obs_icon_type icon_type;
 
-        /** Media controls */
-        void (*media_play_pause)(void* data, bool pause);
-        void (*media_restart)(void* data);
-        void (*media_stop)(void* data);
-        void (*media_next)(void* data);
-        void (*media_previous)(void* data);
-        int64_t (*media_get_duration)(void* data);
-        int64_t (*media_get_time)(void* data);
-        void (*media_set_time)(void* data, int64_t miliseconds);
-        enum obs_media_state (*media_get_state)(void* data);
+	/** Media controls */
+	void (*media_play_pause)(void *data, bool pause);
+	void (*media_restart)(void *data);
+	void (*media_stop)(void *data);
+	void (*media_next)(void *data);
+	void (*media_previous)(void *data);
+	int64_t (*media_get_duration)(void *data);
+	int64_t (*media_get_time)(void *data);
+	void (*media_set_time)(void *data, int64_t miliseconds);
+	enum obs_media_state (*media_get_state)(void *data);
 
-        /* version-related stuff */
-        uint32_t version; /* increment if needed to specify a new version */
-        const char* unversioned_id; /* set internally, don't set manually */
+	/* version-related stuff */
+	uint32_t version; /* increment if needed to specify a new version */
+	const char *unversioned_id; /* set internally, don't set manually */
 
-        /** Missing files **/
-        obs_missing_files_t* (*missing_files)(void* data);
+	/** Missing files **/
+	obs_missing_files_t *(*missing_files)(void *data);
 
-        /** Get color space **/
-        enum gs_color_space (*video_get_color_space)(void* data, size_t count, const enum gs_color_space* preferred_spaces);
+	/** Get color space **/
+	enum gs_color_space (*video_get_color_space)(
+		void *data, size_t count,
+		const enum gs_color_space *preferred_spaces);
 
-        /**
+	/**
 	 * Called when the filter is added to a source
 	 *
 	 * @param  data    Filter data
 	 * @param  source  Source that the filter is being added to
 	 */
-        void (*filter_add)(void* data, obs_source_t* source);
-    };
+	void (*filter_add)(void *data, obs_source_t *source);
+};
 
-    EXPORT void obs_register_source_s(const struct obs_source_info* info, size_t size);
+EXPORT void obs_register_source_s(const struct obs_source_info *info,
+				  size_t size);
 
 /**
  * Registers a source definition to the current obs context.  This should be
@@ -561,7 +571,8 @@ extern "C"
  *
  * @param  info  Pointer to the source definition structure
  */
-#define obs_register_source(info) obs_register_source_s(info, sizeof(struct obs_source_info))
+#define obs_register_source(info) \
+	obs_register_source_s(info, sizeof(struct obs_source_info))
 
 #ifdef __cplusplus
 }

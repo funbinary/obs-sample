@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16...3.25)
 
 legacy_check()
 
-set(obs-websocket_VERSION 5.2.3)
+set(obs-websocket_VERSION 5.3.1)
 set(OBS_WEBSOCKET_RPC_VERSION 1)
 
 option(ENABLE_WEBSOCKET "Enable building OBS with websocket plugin" ON)
@@ -11,16 +11,16 @@ if(NOT ENABLE_WEBSOCKET)
   return()
 endif()
 
-# Submodule deps check
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/qr/cpp/QrCode.hpp")
-  message(FATAL_ERROR "obs-websocket submodule deps not available.")
-endif()
-
 # Find Qt
 find_qt(COMPONENTS Core Widgets Svg Network)
 
 # Find nlohmann JSON
 find_package(nlohmann_json 3 REQUIRED)
+
+# Find qrcodegencpp
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
+find_package(qrcodegencpp REQUIRED)
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG OFF)
 
 # Find WebSocket++
 find_package(Websocketpp 0.8 REQUIRED)
@@ -53,7 +53,6 @@ target_sources(
   PRIVATE src/websocketserver/WebSocketServer.cpp
           src/websocketserver/WebSocketServer_Protocol.cpp
           src/websocketserver/WebSocketServer.h
-          src/websocketserver/rpc/WebSocketSession.cpp
           src/websocketserver/rpc/WebSocketSession.h
           src/websocketserver/types/WebSocketCloseCode.h
           src/websocketserver/types/WebSocketOpCode.h)
@@ -125,8 +124,6 @@ target_sources(
           src/utils/Platform.h
           src/utils/Utils.h)
 
-target_sources(obs-websocket PRIVATE deps/qr/cpp/QrCode.cpp deps/qr/cpp/QrCode.hpp)
-
 configure_file(src/plugin-macros.h.in plugin-macros.generated.h)
 target_sources(obs-websocket PRIVATE plugin-macros.generated.h)
 
@@ -155,7 +152,8 @@ target_link_libraries(
           Qt::Network
           nlohmann_json::nlohmann_json
           Websocketpp::Websocketpp
-          Asio::Asio)
+          Asio::Asio
+          qrcodegencpp::qrcodegencpp)
 
 set_target_properties_obs(
   obs-websocket
@@ -170,4 +168,6 @@ if(OS_WINDOWS)
     TARGET obs-websocket
     APPEND
     PROPERTY AUTORCC_OPTIONS --format-version 1)
+
+  target_link_options(obs-websocket PRIVATE /IGNORE:4099)
 endif()

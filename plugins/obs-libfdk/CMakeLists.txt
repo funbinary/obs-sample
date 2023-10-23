@@ -1,5 +1,11 @@
 project(obs-libfdk)
 
+option(ENABLE_LIBFDK "Enable FDK AAC support" OFF)
+
+if(NOT ENABLE_LIBFDK)
+  obs_status(DISABLED "obs-libfdk")
+  return()
+endif()
 
 find_package(Libfdk REQUIRED)
 
@@ -12,4 +18,4 @@ target_link_libraries(obs-libfdk PRIVATE OBS::libobs LibFDK::LibFDK)
 
 set_target_properties(obs-libfdk PROPERTIES FOLDER "plugins" PREFIX "")
 
-#setup_plugin_target(obs-libfdk)
+setup_plugin_target(obs-libfdk)

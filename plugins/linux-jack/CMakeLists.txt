@@ -1,10 +1,10 @@
 project(linux-jack)
 
-#option(ENABLE_JACK "Build OBS with JACK support" OFF)
-#if (NOT ENABLE_JACK)
-#    obs_status(DISABLED "linux-jack")
-#    return()
-#endif ()
+option(ENABLE_JACK "Build OBS with JACK support" OFF)
+if(NOT ENABLE_JACK)
+  obs_status(DISABLED "linux-jack")
+  return()
+endif()
 
 find_package(Jack REQUIRED)
 
@@ -17,4 +17,4 @@ target_link_libraries(linux-jack PRIVATE OBS::libobs Jack::Jack)
 
 set_target_properties(linux-jack PROPERTIES FOLDER "plugins" PROJECT_LABEL "JACK Audio")
 
-#setup_plugin_target(linux-jack)
+setup_plugin_target(linux-jack)

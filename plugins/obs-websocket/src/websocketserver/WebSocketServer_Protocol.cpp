@@ -82,7 +82,7 @@ void WebSocketServer::ProcessMessage(SessionPtr session, WebSocketServer::Proces
 	}
 
 	// Only `Identify` is allowed when not identified
-	if (!session->IsIdentified() && opCode != 1) {
+	if (!session->IsIdentified() && opCode != WebSocketOpCode::Identify) {
 		ret.closeCode = WebSocketCloseCode::NotIdentified;
 		ret.closeReason = "You attempted to send a non-Identify message while not identified.";
 		return;
@@ -146,9 +146,8 @@ void WebSocketServer::ProcessMessage(SessionPtr session, WebSocketServer::Proces
 		session->SetRpcVersion(requestedRpcVersion);
 
 		SetSessionParameters(session, ret, payloadData);
-		if (ret.closeCode != WebSocketCloseCode::DontClose) {
+		if (ret.closeCode != WebSocketCloseCode::DontClose)
 			return;
-		}
 
 		// Increment refs for event subscriptions
 		auto eventHandler = GetEventHandler();
@@ -178,9 +177,8 @@ void WebSocketServer::ProcessMessage(SessionPtr session, WebSocketServer::Proces
 		eventHandler->ProcessUnsubscription(session->EventSubscriptions());
 
 		SetSessionParameters(session, ret, payloadData);
-		if (ret.closeCode != WebSocketCloseCode::DontClose) {
+		if (ret.closeCode != WebSocketCloseCode::DontClose)
 			return;
-		}
 
 		// Increment refs for new subscriptions
 		eventHandler->ProcessSubscription(session->EventSubscriptions());
@@ -209,13 +207,17 @@ void WebSocketServer::ProcessMessage(SessionPtr session, WebSocketServer::Proces
 			return;
 		}
 
-		RequestHandler requestHandler(session);
-
 		std::string requestType = payloadData["requestType"];
-		json requestData = payloadData["requestData"];
-		Request request(requestType, requestData);
+		RequestResult requestResult;
+		if (_obsReady) {
+			json requestData = payloadData["requestData"];
+			Request request(requestType, requestData);
 
-		RequestResult requestResult = requestHandler.ProcessRequest(request);
+			RequestHandler requestHandler(session);
+			requestResult = requestHandler.ProcessRequest(request);
+		} else {
+			requestResult = RequestResult::Error(RequestStatus::NotReady, "OBS is not ready to perform the request.");
+		}
 
 		json resultPayloadData;
 		resultPayloadData["requestType"] = requestType;
@@ -303,21 +305,33 @@ void WebSocketServer::ProcessMessage(SessionPtr session, WebSocketServer::Proces
 		}
 
 		std::vector<json> requests = payloadData["requests"];
+		std::vector<RequestResult> resultsVector;
+		if (_obsReady) {
+			std::vector<RequestBatchRequest> requestsVector;
+			for (auto &requestJson : requests) {
+				if (!requestJson["requestType"].is_string())
+					requestJson["requestType"] =
+						""; // Workaround for what would otherwise be extensive additional logic for a rare edge case
+				std::string requestType = requestJson["requestType"];
+				json requestData = requestJson["requestData"];
+				json inputVariables = requestJson["inputVariables"];
+				json outputVariables = requestJson["outputVariables"];
+				requestsVector.emplace_back(requestType, requestData, executionType, inputVariables,
+							    outputVariables);
+			}
 
-		std::vector<RequestBatchRequest> requestsVector;
-		for (auto &requestJson : requests) {
-			if (!requestJson["requestType"].is_string())
-				requestJson["requestType"] =
-					""; // Workaround for what would otherwise be extensive additional logic for a rare edge case
-			std::string requestType = requestJson["requestType"];
-			json requestData = requestJson["requestData"];
-			json inputVariables = requestJson["inputVariables"];
-			json outputVariables = requestJson["outputVariables"];
-			requestsVector.emplace_back(requestType, requestData, executionType, inputVariables, outputVariables);
+			resultsVector = RequestBatchHandler::ProcessRequestBatch(
+				_threadPool, session, executionType, requestsVector, payloadData["variables"], haltOnFailure);
+		} else {
+			// I lowkey hate this, but whatever
+			if (haltOnFailure) {
+				resultsVector.emplace_back(RequestStatus::NotReady, "OBS is not ready to perform the request.");
+			} else {
+				for (size_t i = 0; i < requests.size(); i++)
+					resultsVector.emplace_back(RequestStatus::NotReady,
+								   "OBS is not ready to perform the request.");
+			}
 		}
-
-		auto resultsVector = RequestBatchHandler::ProcessRequestBatch(_threadPool, session, executionType, requestsVector,
-									      payloadData["variables"], haltOnFailure);
 
 		size_t i = 0;
 		std::vector<json> results;
@@ -342,7 +356,7 @@ void WebSocketServer::ProcessMessage(SessionPtr session, WebSocketServer::Proces
 void WebSocketServer::BroadcastEvent(uint64_t requiredIntent, const std::string &eventType, const json &eventData,
 				     uint8_t rpcVersion)
 {
-	if (!_server.is_listening())
+	if (!_server.is_listening() || !_obsReady)
 		return;
 
 	_threadPool.start(Utils::Compat::CreateFunctionRunnable([=]() {
@@ -361,19 +375,16 @@ void WebSocketServer::BroadcastEvent(uint64_t requiredIntent, const std::string 
 		// Recurse connected sessions and send the event to suitable sessions.
 		std::unique_lock<std::mutex> lock(_sessionMutex);
 		for (auto &it : _sessions) {
-			if (!it.second->IsIdentified()) {
+			if (!it.second->IsIdentified())
 				continue;
-			}
-			if (rpcVersion && it.second->RpcVersion() != rpcVersion) {
+			if (rpcVersion && it.second->RpcVersion() != rpcVersion)
 				continue;
-			}
 			if ((it.second->EventSubscriptions() & requiredIntent) != 0) {
 				websocketpp::lib::error_code errorCode;
 				switch (it.second->Encoding()) {
 				case WebSocketEncoding::Json:
-					if (messageJson.empty()) {
+					if (messageJson.empty())
 						messageJson = eventMessage.dump();
-					}
 					_server.send((websocketpp::connection_hdl)it.first, messageJson,
 						     websocketpp::frame::opcode::text, errorCode);
 					it.second->IncrementOutgoingMessages();

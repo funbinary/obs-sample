@@ -103,10 +103,7 @@ void EventHandler::HandleCurrentProgramSceneChanged()
 	OBSSourceAutoRelease currentScene = obs_frontend_get_current_scene();
 
 	json eventData;
-	if (currentScene)
-		eventData["sceneName"] = obs_source_get_name(currentScene);
-	else
-		eventData["sceneName"] = nullptr;
+	eventData["sceneName"] = obs_source_get_name(currentScene);
 	BroadcastEvent(EventSubscription::Scenes, "CurrentProgramSceneChanged", eventData);
 }
 

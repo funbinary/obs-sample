@@ -171,5 +171,4 @@ macro(setup_obs_project)
         "x11-toolkits/qt5-gui"
         "x11-toolkits/qt5-widgets")
   endif()
-  include(CPack)
 endmacro()

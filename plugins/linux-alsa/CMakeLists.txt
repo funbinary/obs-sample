@@ -1,10 +1,10 @@
 project(linux-alsa)
 
 option(ENABLE_ALSA "Build OBS with ALSA support" ON)
-if (NOT ENABLE_ALSA)
-    obs_status(DISABLED "linux-alsa")
-    return()
-endif ()
+if(NOT ENABLE_ALSA)
+  obs_status(DISABLED "linux-alsa")
+  return()
+endif()
 
 find_package(ALSA REQUIRED)
 
@@ -17,4 +17,4 @@ target_link_libraries(linux-alsa PRIVATE OBS::libobs ALSA::ALSA)
 
 set_target_properties(linux-alsa PROPERTIES FOLDER "plugins")
 
-
+setup_plugin_target(linux-alsa)

@@ -1,5 +1,9 @@
 project(linux-pulseaudio)
 
+if(NOT ENABLE_PULSEAUDIO)
+  obs_status(DISABLED "linux-pulseaudio")
+  return()
+endif()
 
 find_package(PulseAudio REQUIRED)
 
@@ -14,4 +18,4 @@ target_link_libraries(linux-pulseaudio PRIVATE OBS::libobs ${PULSEAUDIO_LIBRARY}
 
 set_target_properties(linux-pulseaudio PROPERTIES FOLDER "plugins")
 
-#setup_plugin_target(linux-pulseaudio)
+setup_plugin_target(linux-pulseaudio)
