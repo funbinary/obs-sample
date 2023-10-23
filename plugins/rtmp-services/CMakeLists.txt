@@ -13,7 +13,7 @@ if (NOT TARGET OBS::file-updater)
     add_subdirectory("${CMAKE_SOURCE_DIR}/deps/file-updater" "${CMAKE_BINARY_DIR}/deps/file-updater")
 endif ()
 
-find_package(jansson REQUIRED)
+find_package(Jansson REQUIRED)
 
 add_library(rtmp-services MODULE)
 add_library(OBS::rtmp-services ALIAS rtmp-services)

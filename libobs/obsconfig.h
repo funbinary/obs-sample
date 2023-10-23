@@ -6,7 +6,7 @@
 
 /* #undef GIO_FOUND */
 /* #undef PULSEAUDIO_FOUND */
-#define XCB_XINPUT_FOUND
+/* #undef XCB_XINPUT_FOUND */
 /* #undef ENABLE_WAYLAND */
 
 /* NOTE: Release candidate version numbers internally are always the previous

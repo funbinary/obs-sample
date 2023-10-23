@@ -138,7 +138,6 @@ static inline bool video_output_cur_frame(struct video_output* video)
     bool skipped;
 
     /* -------------------------------- */
-
     pthread_mutex_lock(&video->data_mutex);
 
     frame_info = &video->cache[video->first_added];

@@ -51,7 +51,7 @@
 #include "obsconfig.h"
 #else
 //#define OBS_VERSION "1.0-1-g83e98e2-modified"
-#define OBS_DATA_PATH "../../data"
+#define OBS_DATA_PATH "../data"
 #define OBS_INSTALL_PREFIX ""
 #define OBS_PLUGIN_DESTINATION "obs-plugins"
 #define OBS_RELATIVE_PREFIX "../../"
@@ -67,4 +67,6 @@
 #define OBS_BETA 0
 #endif
 
-#define OBS_INSTALL_DATA_PATH OBS_INSTALL_PREFIX OBS_DATA_PATH
+#define OBS_INSTALL_DATA_PATH "/usr/local/share/obs"
+
+//#define OBS_INSTALL_DATA_PATH OBS_INSTALL_PREFIX OBS_DATA_PATH

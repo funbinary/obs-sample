@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22...3.25)
+cmake_minimum_required(VERSION 3.22)
 
 
 project(obs_sample)
@@ -9,15 +9,15 @@ set(OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/output)
 set(LIBRARY_OUTPUT_PATH ${OUTPUT_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${OUTPUT_DIR})
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
+message(${CMAKE_MODULE_PATH})
 
-
-find_package(jansson REQUIRED)
+find_package(Jansson MODULE REQUIRED)
 find_package(FFmpeg REQUIRED avformat avutil swscale swresample OPTIONAL_COMPONENTS avcodec)
 
 find_package(ZLIB REQUIRED)
 find_package(LibUUID REQUIRED)
 find_package(X11 REQUIRED)
-find_package(x11_xcb REQUIRED)
+find_package(X11_XCB MODULE REQUIRED)
 # cmake-format: off
 find_package(xcb COMPONENTS xcb OPTIONAL_COMPONENTS xcb-xinput QUIET)
 # cmake-format: on
